@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Lato:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 27 38% 96%; /* cream */
+    --foreground: 10 28% 17%; /* coffee-brown */
+
+    --card: 27 38% 96%;
+    --card-foreground: 10 28% 17%;
+
+    --popover: 27 38% 96%;
+    --popover-foreground: 10 28% 17%;
+
+    --primary: 10 28% 23%; /* #4A2C2A */
+    --primary-foreground: 40 69% 94%; /* #D4B499 */
+
+    --secondary: 40 69% 75%; /* #D4B499 */
+    --secondary-foreground: 10 28% 17%;
+
+    --muted: 40 69% 85%;
+    --muted-foreground: 10 28% 30%;
+
+    --accent: 13 65% 59%; /* burnt-orange */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 10 28% 80%;
+    --input: 10 28% 85%;
+    --ring: 13 65% 59%;
+
+    --radius: 0.5rem;
+
+    /* Font families */
+    --heading-font: 'Montserrat', sans-serif;
+    --body-font: 'Lato', Arial, sans-serif;
+  }
+
+  .dark {
+    --background: 10 28% 17%; /* coffee-brown */
+    --foreground: 27 38% 96%; /* cream */
+
+    --card: 10 28% 17%;
+    --card-foreground: 27 38% 96%;
+
+    --popover: 10 28% 17%;
+    --popover-foreground: 27 38% 96%;
+
+    --primary: 27 38% 96%;
+    --primary-foreground: 10 28% 17%;
+
+    --secondary: 10 28% 25%;
+    --secondary-foreground: 27 38% 96%;
+
+    --muted: 10 28% 25%;
+    --muted-foreground: 27 38% 80%;
+
+    --accent: 13 65% 59%; /* burnt-orange */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 10 28% 25%;
+    --input: 10 28% 25%;
+    --ring: 13 65% 59%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--body-font);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  section {
+    @apply w-full py-16 md:py-24 lg:py-32;
+  }
+  h1, h2, h3 {
+    font-family: var(--heading-font);
+    color: hsl(var(--primary));
+    font-weight: 700;
+  }
+  p, li, span, a, input, textarea, button {
+    font-family: var(--body-font);
+  }
+  a {
+    color: hsl(var(--primary));
+    transition: color 0.2s;
+  }
+  a:hover, a:focus {
+    color: hsl(var(--secondary));
+  }
+  button, .btn, input[type="submit"] {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    font-family: var(--heading-font);
+    border-radius: var(--radius);
+    padding: 0.75em 1.5em;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  button.secondary, .btn-secondary {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+  }
+  button:hover, .btn:hover, input[type="submit"]:hover {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--primary));
+  }
+  /* Section backgrounds */
+  .section-bg {
+    background-color: hsl(var(--secondary));
+  }
+}
