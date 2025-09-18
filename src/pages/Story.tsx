@@ -91,7 +91,7 @@ const StoryPage = () => {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            <img src="/coffee-making.jpg" alt="A barista carefully preparing a coffee" className="h-full w-full object-cover" />
+            <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="A barista carefully preparing a coffee" className="h-full w-full object-cover" />
           </motion.div>
           <motion.div
             className="overflow-hidden rounded-lg shadow-lg aspect-square"
@@ -99,7 +99,7 @@ const StoryPage = () => {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            <img src="/fresh-beans.jpg" alt="A handful of freshly roasted coffee beans" className="h-full w-full object-cover" />
+            <img src="https://images.unsplash.com/photo-1559056199-641a0ac8b55e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="A handful of freshly roasted coffee beans" className="h-full w-full object-cover" />
           </motion.div>
           <motion.div
             className="overflow-hidden rounded-lg shadow-lg aspect-square"
@@ -107,7 +107,7 @@ const StoryPage = () => {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
-            <img src="/latte-art.jpg" alt="A cup of coffee with detailed latte art" className="h-full w-full object-cover" />
+            <img src="https://images.unsplash.com/photo-1572442388796-11668a67e53d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="A cup of coffee with detailed latte art" className="h-full w-full object-cover" />
           </motion.div>
         </motion.div>
       </section>

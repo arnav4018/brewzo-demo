@@ -3,6 +3,10 @@
   width: 100%;
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
+  /* GPU acceleration and performance optimizations */
+  will-change: scroll-position;
+  -webkit-overflow-scrolling: touch;
+  contain: layout style paint;
 }
 
 .scroll-stack-scroller.window-scroll {
@@ -17,6 +21,10 @@
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
   will-change: scroll-position;
+  /* Enhanced scrolling performance */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(194, 154, 108, 0.3) transparent;
+  contain: strict;
 }
 
 .scroll-stack-inner {
@@ -64,10 +72,19 @@
   border-radius: 24px;
   box-sizing: border-box;
   border: 1px solid rgba(194, 154, 108, 0.1);
-  /* Improve mobile performance */
+  /* Enhanced performance optimizations */
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
   position: relative;
+  /* Additional GPU acceleration */
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+  -webkit-backface-visibility: hidden;
+  /* Better compositing */
+  isolation: isolate;
+  contain: layout style paint;
+  /* Smooth transitions */
+  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), filter 0.1s ease-out;
 }
 
 @media (min-width: 768px) {

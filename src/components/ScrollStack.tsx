@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useCallback, ReactNode } from 'react';
-import Lenis from 'lenis';
+import { getGlobalLenis } from '@/hooks/useSmoothScroll';
 import './ScrollStack.css';
 
 interface ScrollStackItemProps {
@@ -44,11 +44,11 @@ const ScrollStack = ({
 }: ScrollStackProps) => {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const stackCompletedRef = useRef(false);
-  const animationFrameRef = useRef<number | null>(null);
-  const lenisRef = useRef<Lenis | null>(null);
   const cardsRef = useRef<HTMLElement[]>([]);
   const lastTransformsRef = useRef(new Map());
   const isUpdatingRef = useRef(false);
+  const lastUpdateTimeRef = useRef(0);
+  const throttleDelayRef = useRef(16); // ~60fps
 
   const calculateProgress = useCallback((scrollTop: number, start: number, end: number) => {
     if (scrollTop < start) return 0;
@@ -94,6 +94,12 @@ const ScrollStack = ({
 
   const updateCardTransforms = useCallback(() => {
     if (!cardsRef.current.length || isUpdatingRef.current) return;
+
+    const now = performance.now();
+    if (now - lastUpdateTimeRef.current < throttleDelayRef.current) {
+      return;
+    }
+    lastUpdateTimeRef.current = now;
 
     // Use requestAnimationFrame to prevent blocking
     requestAnimationFrame(() => {
@@ -165,10 +171,10 @@ const ScrollStack = ({
             const lastTransform = lastTransformsRef.current.get(i);
             const hasChanged =
               !lastTransform ||
-              Math.abs(lastTransform.translateY - newTransform.translateY) > 0.5 || // Increased threshold to reduce jitter
-              Math.abs(lastTransform.scale - newTransform.scale) > 0.005 ||
-              Math.abs(lastTransform.rotation - newTransform.rotation) > 0.5 ||
-              Math.abs(lastTransform.blur - newTransform.blur) > 0.1;
+              Math.abs(lastTransform.translateY - newTransform.translateY) > 1 || // Increased threshold to reduce jitter
+              Math.abs(lastTransform.scale - newTransform.scale) > 0.01 ||
+              Math.abs(lastTransform.rotation - newTransform.rotation) > 1 ||
+              Math.abs(lastTransform.blur - newTransform.blur) > 0.2;
 
             if (hasChanged) {
               const transform = `translate3d(0, ${newTransform.translateY}px, 0) scale(${newTransform.scale}) rotate(${newTransform.rotation}deg)`;
@@ -216,65 +222,35 @@ const ScrollStack = ({
   ]);
 
   const handleScroll = useCallback(() => {
-    // Throttle scroll updates to prevent excessive re-renders
-    if (!isUpdatingRef.current) {
-      updateCardTransforms();
-    }
+    // Use global throttling instead of checking isUpdating
+    updateCardTransforms();
   }, [updateCardTransforms]);
 
-  const setupLenis = useCallback(() => {
+  const setupScrollListener = useCallback(() => {
     if (useWindowScroll) {
-      const lenis = new Lenis({
-        duration: 1.2,
-        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true,
-        touchMultiplier: 1.5, // Reduced for better control
-        infinite: false,
-        wheelMultiplier: 0.8, // Reduced for smoother scrolling
-        lerp: 0.08, // Slightly reduced for stability
-        syncTouch: true,
-        syncTouchLerp: 0.1
-      });
-
-      lenis.on('scroll', handleScroll);
-
-      const raf = (time: number) => {
-        lenis.raf(time);
-        animationFrameRef.current = requestAnimationFrame(raf);
-      };
-      animationFrameRef.current = requestAnimationFrame(raf);
-
-      lenisRef.current = lenis;
-      return lenis;
+      // Use the global Lenis instance for window scroll
+      const globalLenis = getGlobalLenis();
+      if (globalLenis) {
+        globalLenis.on('scroll', handleScroll);
+        return () => {
+          globalLenis.off('scroll', handleScroll);
+        };
+      } else {
+        // Fallback to native scroll if global Lenis isn't available yet
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => {
+          window.removeEventListener('scroll', handleScroll);
+        };
+      }
     } else {
+      // For container scroll, use native scroll events
       const scroller = scrollerRef.current;
       if (!scroller) return;
-
-      const lenis = new Lenis({
-        wrapper: scroller,
-        content: scroller.querySelector('.scroll-stack-inner') as HTMLElement,
-        duration: 1.2,
-        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true,
-        touchMultiplier: 2,
-        infinite: false,
-        gestureOrientation: 'vertical',
-        wheelMultiplier: 1,
-        lerp: 0.1,
-        syncTouch: true,
-        syncTouchLerp: 0.075
-      });
-
-      lenis.on('scroll', handleScroll);
-
-      const raf = (time: number) => {
-        lenis.raf(time);
-        animationFrameRef.current = requestAnimationFrame(raf);
+      
+      scroller.addEventListener('scroll', handleScroll, { passive: true });
+      return () => {
+        scroller.removeEventListener('scroll', handleScroll);
       };
-      animationFrameRef.current = requestAnimationFrame(raf);
-
-      lenisRef.current = lenis;
-      return lenis;
     }
   }, [handleScroll, useWindowScroll]);
 
@@ -327,33 +303,34 @@ const ScrollStack = ({
           }
         });
 
-        setupLenis();
+        const cleanup = setupScrollListener();
         
         // Delay initial transform calculation to ensure everything is ready
         requestAnimationFrame(() => {
           updateCardTransforms();
         });
+        
+        return cleanup;
       } catch (error) {
         console.warn('ScrollStack: Error in initializeCards:', error);
       }
     };
     
     // Use a small delay to ensure the component is fully mounted
-    timeoutId = setTimeout(initializeCards, 100);
+    let scrollCleanup: (() => void) | undefined;
+    
+    const initializeWithCleanup = () => {
+      scrollCleanup = initializeCards();
+    };
+    
+    timeoutId = setTimeout(initializeWithCleanup, 100);
 
     return () => {
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      if (lenisRef.current) {
-        try {
-          lenisRef.current.destroy();
-        } catch (error) {
-          console.warn('ScrollStack: Error destroying Lenis:', error);
-        }
+      if (scrollCleanup) {
+        scrollCleanup();
       }
       stackCompletedRef.current = false;
       cardsRef.current = [];
@@ -372,7 +349,7 @@ const ScrollStack = ({
     blurAmount,
     useWindowScroll,
     onStackComplete,
-    setupLenis,
+    setupScrollListener,
     updateCardTransforms
   ]);
 

@@ -5,32 +5,60 @@ import { motion } from "framer-motion";
 import AnimatedPage from "@/components/AnimatedPage";
 import CircularGallery from "@/components/CircularGallery";
 import ScrollStack, { ScrollStackItem } from "@/components/ScrollStack";
+import ImageWithFallback from "@/components/ui/image-with-fallback";
 
 const featuredItems = [
   {
     name: "Mischievous Mocha",
     description: "A rich espresso with dark chocolate and a hint of chili.",
     image: "/How_about_One_sip_at_brewzo_and_your_mood_transfor.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
   },
   {
     name: "Avocado Smash",
     description: "Sourdough toast with fresh avocado, feta, and a sprinkle of mischief.",
     image: "/Its_always_sunny_side_up_at_brewzo_brewzoindia_bho.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1525351484163-7529414344d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
   },
   {
     name: "The Alchemist's Cold Brew",
     description: "Slow-dripped for 18 hours, infused with citrus and spice.",
     image: "/Something_you_need_to_watch_out_with_us_We_are_ope.jpg",
+    fallbackImage: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
   },
 ];
 
 const galleryItems = [
-  { image: "/How_about_One_sip_at_brewzo_and_your_mood_transfor.jpg", text: "Mood Transformer" },
-  { image: "/Its_always_sunny_side_up_at_brewzo_brewzoindia_bho.jpg", text: "Sunny Side Up" },
-  { image: "/Morning_bliss_at_Brewzo_Experience_serene_breakfas.jpg", text: "Morning Bliss" },
-  { image: "/Photo_by_Brewzo_cafe_in_Brewzo_cafe.jpg", text: "Cafe Vibes" },
-  { image: "/what_kind_of_books_do_you_read_shot_at_brewzoindia.jpg", text: "Book & Coffee" },
-  { image: "/Morning_miles_and_Coffee_smiles_with_genrunclub_Ou.jpg", text: "Morning Miles" },
+  { 
+    image: "/How_about_One_sip_at_brewzo_and_your_mood_transfor.jpg", 
+    fallbackImage: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+    text: "Mood Transformer" 
+  },
+  { 
+    image: "/Its_always_sunny_side_up_at_brewzo_brewzoindia_bho.jpg", 
+    fallbackImage: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+    text: "Sunny Side Up" 
+  },
+  { 
+    image: "/Morning_bliss_at_Brewzo_Experience_serene_breakfas.jpg", 
+    fallbackImage: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+    text: "Morning Bliss" 
+  },
+  { 
+    image: "/Photo_by_Brewzo_cafe_in_Brewzo_cafe.jpg", 
+    fallbackImage: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+    text: "Cafe Vibes" 
+  },
+  { 
+    image: "/what_kind_of_books_do_you_read_shot_at_brewzoindia.jpg", 
+    fallbackImage: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+    text: "Book & Coffee" 
+  },
+  { 
+    image: "/Morning_miles_and_Coffee_smiles_with_genrunclub_Ou.jpg", 
+    fallbackImage: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+    text: "Morning Miles" 
+  },
 ];
 
 
@@ -39,17 +67,14 @@ const HomePage = () => {
     <AnimatedPage>
       {/* Hero Section */}
       <section className="relative h-[80vh] w-full overflow-hidden">
-        <motion.video
+        <motion.div
           initial={{ scale: 1.1 }}
           animate={{ scale: 1 }}
           transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute left-0 top-0 h-full w-full object-cover brightness-50"
-          src="/768521885_8428de3f39_o.jpg"
-          poster="/768521885_8428de3f39_o.jpg"
+          className="absolute left-0 top-0 h-full w-full bg-cover bg-center brightness-50"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2047&q=80')"
+          }}
         />
         {/* Enhanced gradient overlay for better text visibility */}
         <div className="absolute left-0 top-0 h-full w-full bg-gradient-to-b from-amber-900/60 via-orange-900/50 to-red-900/40" />
@@ -261,8 +286,9 @@ const HomePage = () => {
         >
           <ScrollStackItem itemClassName="bg-gradient-to-br from-orange-50 to-amber-50 border-l-4 border-orange-300">
             <div className="flex flex-col md:flex-row items-center gap-6">
-              <img 
+              <ImageWithFallback 
                 src={featuredItems[0].image} 
+                fallbackSrc={featuredItems[0].fallbackImage}
                 alt={featuredItems[0].name}
                 className="w-24 h-24 md:w-32 md:h-32 object-cover rounded-2xl shadow-lg flex-shrink-0"
               />
@@ -278,8 +304,9 @@ const HomePage = () => {
           
           <ScrollStackItem itemClassName="bg-gradient-to-br from-stone-50 to-amber-50 border-l-4 border-amber-400">
             <div className="flex flex-col md:flex-row items-center gap-6">
-              <img 
+              <ImageWithFallback 
                 src={featuredItems[1].image} 
+                fallbackSrc={featuredItems[1].fallbackImage}
                 alt={featuredItems[1].name}
                 className="w-24 h-24 md:w-32 md:h-32 object-cover rounded-2xl shadow-lg flex-shrink-0"
               />
@@ -295,8 +322,9 @@ const HomePage = () => {
           
           <ScrollStackItem itemClassName="bg-gradient-to-br from-amber-50 to-yellow-50 border-l-4 border-yellow-600">
             <div className="flex flex-col md:flex-row items-center gap-6">
-              <img 
+              <ImageWithFallback 
                 src={featuredItems[2].image} 
+                fallbackSrc={featuredItems[2].fallbackImage}
                 alt={featuredItems[2].name}
                 className="w-24 h-24 md:w-32 md:h-32 object-cover rounded-2xl shadow-lg flex-shrink-0"
               />

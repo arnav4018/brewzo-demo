@@ -107,6 +107,7 @@ class Media {
   geometry: any;
   gl: any;
   image: string;
+  fallbackImage: string;
   index: number;
   length: number;
   renderer: any;
@@ -134,6 +135,7 @@ class Media {
     geometry,
     gl,
     image,
+    fallbackImage,
     index,
     length,
     renderer,
@@ -150,6 +152,7 @@ class Media {
     this.geometry = geometry;
     this.gl = gl;
     this.image = image;
+    this.fallbackImage = fallbackImage;
     this.index = index;
     this.length = length;
     this.renderer = renderer;
@@ -239,6 +242,11 @@ class Media {
     img.onload = () => {
       texture.image = img;
       this.program.uniforms.uImageSizes.value = [img.naturalWidth, img.naturalHeight];
+    };
+    img.onerror = () => {
+      if (this.fallbackImage && this.fallbackImage !== this.image) {
+        img.src = this.fallbackImage;
+      }
     };
   }
 
@@ -402,12 +410,36 @@ class App {
 
   createMedias(items: any[], bend = 1, textColor: string, borderRadius: number, font: string) {
     const defaultItems = [
-      { image: `/How_about_One_sip_at_brewzo_and_your_mood_transfor.jpg`, text: 'Mood Transformer' },
-      { image: `/Its_always_sunny_side_up_at_brewzo_brewzoindia_bho.jpg`, text: 'Sunny Side Up' },
-      { image: `/Morning_bliss_at_Brewzo_Experience_serene_breakfas.jpg`, text: 'Morning Bliss' },
-      { image: `/Photo_by_Brewzo_cafe_in_Brewzo_cafe.jpg`, text: 'Cafe Vibes' },
-      { image: `/what_kind_of_books_do_you_read_shot_at_brewzoindia.jpg`, text: 'Book & Coffee' },
-      { image: `/Morning_miles_and_Coffee_smiles_with_genrunclub_Ou.jpg`, text: 'Morning Miles' }
+      { 
+        image: `/How_about_One_sip_at_brewzo_and_your_mood_transfor.jpg`, 
+        fallbackImage: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        text: 'Mood Transformer' 
+      },
+      { 
+        image: `/Its_always_sunny_side_up_at_brewzo_brewzoindia_bho.jpg`, 
+        fallbackImage: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        text: 'Sunny Side Up' 
+      },
+      { 
+        image: `/Morning_bliss_at_Brewzo_Experience_serene_breakfas.jpg`, 
+        fallbackImage: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        text: 'Morning Bliss' 
+      },
+      { 
+        image: `/Photo_by_Brewzo_cafe_in_Brewzo_cafe.jpg`, 
+        fallbackImage: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        text: 'Cafe Vibes' 
+      },
+      { 
+        image: `/what_kind_of_books_do_you_read_shot_at_brewzoindia.jpg`, 
+        fallbackImage: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        text: 'Book & Coffee' 
+      },
+      { 
+        image: `/Morning_miles_and_Coffee_smiles_with_genrunclub_Ou.jpg`, 
+        fallbackImage: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80",
+        text: 'Morning Miles' 
+      }
     ];
     const galleryItems = items && items.length ? items : defaultItems;
     this.mediasImages = galleryItems.concat(galleryItems);
@@ -416,6 +448,7 @@ class App {
         geometry: this.planeGeometry,
         gl: this.gl,
         image: data.image,
+        fallbackImage: data.fallbackImage,
         index,
         length: this.mediasImages.length,
         renderer: this.renderer,
@@ -527,7 +560,7 @@ class App {
 }
 
 interface CircularGalleryProps {
-  items?: { image: string; text: string }[];
+  items?: { image: string; fallbackImage?: string; text: string }[];
   bend?: number;
   textColor?: string;
   borderRadius?: number;
